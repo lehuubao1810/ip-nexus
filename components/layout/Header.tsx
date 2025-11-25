@@ -1,7 +1,28 @@
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { useState } from 'react';
 
-export default function Header() {
+interface HeaderProps {
+  onSearch: (ipId: string) => void;
+  isLoading?: boolean;
+}
+
+export default function Header({ onSearch, isLoading }: HeaderProps) {
+  const [searchValue, setSearchValue] = useState('');
+
+  const handleSearch = () => {
+    const trimmed = searchValue.trim();
+    if (trimmed) {
+      onSearch(trimmed);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <header className="fixed top-0 left-0 w-full z-50 p-4 pointer-events-none">
       <div className="flex justify-between items-center max-w-7xl mx-auto">
@@ -15,10 +36,21 @@ export default function Header() {
         </div>
 
         <div className="relative w-96 pointer-events-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-cyan-500/50 w-4 h-4" />
+          {isLoading && (
+            <div className="absolute left-3 top-1/2 -translate-y-1/2">
+              <div className="w-4 h-4 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+          {!isLoading && (
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-cyan-500/50 w-4 h-4" />
+          )}
           <Input 
             className="bg-[#0a0a1a]/80 border-cyan-900/50 text-cyan-100 pl-10 placeholder:text-cyan-900/50 focus-visible:ring-cyan-500/50 backdrop-blur-sm"
-            placeholder="Search IP Asset ID..."
+            placeholder="Enter IP Asset ID (0x...)..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isLoading}
           />
         </div>
       </div>

@@ -52,13 +52,24 @@ export default function Sidebar({ open, onOpenChange, node }: SidebarProps) {
             {node.description || "No description available for this asset."}
           </SheetDescription>
 
-          <div className="grid grid-cols-2 gap-4 pt-8">
+          <div className="space-y-3 pt-6 border-t border-white/5">
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-500 uppercase tracking-wider">IP Address</span>
+              <code className="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded">
+                {node.id.slice(0, 10)}...{node.id.slice(-8)}
+              </code>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 pt-4">
             <div className="p-4 rounded-lg bg-white/5 border border-white/5">
-              <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Derivatives</div>
-              <div className="text-2xl font-mono text-cyan-400">12</div>
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Node Type</div>
+              <div className={`text-2xl font-mono ${node.type === 'ROOT' ? 'text-yellow-400' : 'text-cyan-400'}`}>
+                {node.type}
+              </div>
             </div>
             <div className="p-4 rounded-lg bg-white/5 border border-white/5">
-              <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">License Status</div>
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Status</div>
               <div className="text-2xl font-mono text-green-400">Active</div>
             </div>
           </div>
