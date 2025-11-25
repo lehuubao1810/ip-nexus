@@ -73,7 +73,9 @@ export default function Sidebar({ open, onOpenChange, node }: SidebarProps) {
               <div className="flex items-center gap-2">
                 <code
                   className="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded flex gap-2 text-nowrap cursor-pointer hover:bg-cyan-500/20"
-                  onClick={() => router.push(`/?ipId=${node.id}`)}
+                  onClick={() => {
+                    onOpenChange(false);
+                    router.push(`/?ipId=${node.id}`)}}
                 >
                   {node.id.slice(0, 10)}...{node.id.slice(-8)}
                   {/* icon  */}
