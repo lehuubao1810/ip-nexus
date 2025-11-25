@@ -193,7 +193,7 @@ export default function ArkhamGraph({ data, onNodeClick, onReady }: ArkhamGraphP
         // d3AlphaDecay={0.05} // Very fast cooling to freeze layout quickly
         // d3VelocityDecay={0.8} // High friction to stop movement/oscillation
         // warmupTicks={100} // Pre-calculate
-// 1. cooldownTicks: Số bước tính toán. 
+        // 1. cooldownTicks: Số bước tính toán. 
         // Để thấp (0) thì graph đứng im ngay lập tức (nhưng vị trí xấu).
         // Để 100 là vừa đủ để nó bung ra rồi dừng.
         cooldownTicks={100}
@@ -216,8 +216,9 @@ export default function ArkhamGraph({ data, onNodeClick, onReady }: ArkhamGraphP
           // Chỉ zoom và ẩn loading, KHÔNG can thiệp lực ở đây nữa
           if (!isGraphReady) {
              setIsGraphReady(true);
-             graphRef.current?.zoomToFit(400, 50);
-             onReady?.(() => graphRef.current?.zoomToFit(400, 50));
+             // Padding 150px cho thoáng, view rộng hơn
+             graphRef.current?.zoomToFit(400, 150);
+             onReady?.(() => graphRef.current?.zoomToFit(400, 150));
           }
         }}
       />
