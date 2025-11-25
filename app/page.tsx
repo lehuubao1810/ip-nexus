@@ -7,7 +7,7 @@ import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import ArkhamGraph from '@/components/viz/ArkhamGraph';
 import IPAssetsList from '@/components/IPAssetsList';
-import LoadingProgress from '@/components/LoadingProgress';
+import { LoadingProgress } from '@/components/LoadingProgress';
 import { GraphNode } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { useIpGraphData } from '@/hooks/useIpGraphData';
@@ -89,10 +89,7 @@ function HomeContent() {
 
       {/* Loading Progress */}
       {loadingProgress && (
-        <LoadingProgress 
-          current={loadingProgress.current}
-          estimated={loadingProgress.estimated}
-        />
+        <LoadingProgress />
       )}
 
       {/* Error State */}

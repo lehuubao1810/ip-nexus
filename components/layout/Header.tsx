@@ -45,7 +45,11 @@ export default function Header({ onSearch, isLoading }: HeaderProps) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-cyan-500/50 w-4 h-4" />
           )}
           <Input 
-            className="bg-[#0a0a1a]/80 border-cyan-900/50 text-cyan-100 pl-10 placeholder:text-cyan-900/50 focus-visible:ring-cyan-500/50 backdrop-blur-sm"
+            className="w-full pl-10 pr-4 py-2 bg-[#0a0b1e]/80 border border-cyan-500/30 rounded-lg 
+                     text-cyan-100 placeholder:text-cyan-200/50
+                     focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400
+                     shadow-[0_0_10px_rgba(6,182,212,0.15)] focus:shadow-[0_0_20px_rgba(6,182,212,0.4)]
+                     transition-all duration-300"
             placeholder="Enter IP Asset ID (0x...)..."
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
