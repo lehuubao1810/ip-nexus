@@ -2,11 +2,12 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { RotateCcw, AlertCircle, ArrowLeft } from 'lucide-react';
+import { RotateCcw, AlertCircle, ArrowLeft, ChevronDown } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import ArkhamGraph from '@/components/viz/ArkhamGraph';
 import IPAssetsList from '@/components/IPAssetsList';
+import LoadingProgress from '@/components/LoadingProgress';
 import { GraphNode } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { useIpGraphData } from '@/hooks/useIpGraphData';
@@ -20,7 +21,7 @@ function HomeContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [resetView, setResetView] = useState<(() => void) | null>(null);
   
-  const { data, loading, error, fetchIpGraph } = useIpGraphData();
+  const { data, loading, error, fetchIpGraph, loadingProgress, hasMore, loadMoreEdges } = useIpGraphData();
 
   // Fetch graph data when ipId changes
   useEffect(() => {
@@ -86,6 +87,14 @@ function HomeContent() {
         </Button>
       </div>
 
+      {/* Loading Progress */}
+      {loadingProgress && (
+        <LoadingProgress 
+          current={loadingProgress.current}
+          estimated={loadingProgress.estimated}
+        />
+      )}
+
       {/* Error State */}
       {error && (
         <div className="absolute top-24 left-1/2 -translate-x-1/2 z-50 max-w-md">
@@ -109,6 +118,20 @@ function HomeContent() {
               onReady={(resetFn) => setResetView(() => resetFn)}
             />
           </div>
+
+          {/* Load More Button */}
+          {hasMore && !loading && (
+            <div className="fixed bottom-8 left-8 z-10">
+              <Button
+                onClick={loadMoreEdges}
+                className="bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 text-purple-100 backdrop-blur-sm shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-all hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] group"
+                size="lg"
+              >
+                <ChevronDown className="w-5 h-5 mr-2 group-hover:translate-y-1 transition-transform duration-300" />
+                Load More Edges
+              </Button>
+            </div>
+          )}
 
           {/* Reset View Button */}
           <div className="fixed bottom-8 right-8 z-10">

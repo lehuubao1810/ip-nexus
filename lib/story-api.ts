@@ -146,12 +146,24 @@ export async function getIpAssets(ipIds: string[]): Promise<IPAsset[]> {
 
 /**
  * Fetch parent-child relationships for an IP Asset
+ * Supports progressive loading with limit and offset
+ * 
+ * @param ipId - The IP Asset ID
+ * @param limit - Maximum number of edges to fetch (default 100)
+ * @param offset - Starting offset for pagination (default 0)
+ * @returns Object with parents, children arrays, hasMore flag, and totalLoaded count
  */
-export async function getIpAssetEdges(ipId: string): Promise<{
+export async function getIpAssetEdges(
+  ipId: string,
+  limit: number = 100,
+  offset: number = 0
+): Promise<{
   parents: IPAssetEdge[];
   children: IPAssetEdge[];
+  hasMore: boolean;
+  totalLoaded: number;
 }> {
-  // Fetch edges where ipId is the child (to get parents)
+  // Fetch edges where this IP is the child (to get parents)
   const parentsResponse = await fetch(`${BASE_URL}/assets/edges`, {
     method: 'POST',
     headers: {
@@ -163,13 +175,13 @@ export async function getIpAssetEdges(ipId: string): Promise<{
         childIpId: ipId,
       },
       pagination: {
-        limit: 100,
-        offset: 0,
+        limit: Math.ceil(limit / 2), // Split limit between parents and children
+        offset: Math.floor(offset / 2),
       },
     }),
   });
 
-  // Fetch edges where ipId is the parent (to get children)
+  // Fetch edges where this IP is the parent (to get children)
   const childrenResponse = await fetch(`${BASE_URL}/assets/edges`, {
     method: 'POST',
     headers: {
@@ -181,8 +193,8 @@ export async function getIpAssetEdges(ipId: string): Promise<{
         parentIpId: ipId,
       },
       pagination: {
-        limit: 100,
-        offset: 0,
+        limit: Math.ceil(limit / 2),
+        offset: Math.floor(offset / 2),
       },
     }),
   });
@@ -194,11 +206,21 @@ export async function getIpAssetEdges(ipId: string): Promise<{
   const parentsData: ListEdgesResponse = await parentsResponse.json();
   const childrenData: ListEdgesResponse = await childrenResponse.json();
 
+  const parents = parentsData.data || [];
+  const children = childrenData.data || [];
+  const totalLoaded = parents.length + children.length;
+  
+  // Check if there are more edges available
+  const hasMore = parentsData.pagination.hasMore || childrenData.pagination.hasMore;
+
   return {
-    parents: parentsData.data,
-    children: childrenData.data,
+    parents,
+    children,
+    hasMore,
+    totalLoaded,
   };
 }
+
 
 /**
  * List recent IP Assets from the network
