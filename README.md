@@ -1,6 +1,6 @@
 # IP Nexus
 
-![IP Nexus Logo](public/logo.jpg)
+![IP Nexus Logo](public/screenshot.png)
 
 **IP Nexus** is a specialized data exploration tool designed to illuminate the complex relationships of Intellectual Property Assets (IP Assets) on the Story Protocol blockchain.
 
