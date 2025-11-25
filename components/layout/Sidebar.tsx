@@ -30,7 +30,7 @@ export default function Sidebar({ open, onOpenChange, node }: SidebarProps) {
             }`}>
               {node.type}
             </div>
-            <span className="text-xs text-muted-foreground font-mono">{node.id}</span>
+            {/* <span className="text-xs text-muted-foreground font-mono">{node.id}</span> */}
           </div>
 
           <div className="relative w-full aspect-square rounded-lg overflow-hidden border border-white/10 shadow-2xl">

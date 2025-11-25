@@ -24,8 +24,8 @@ export default function Header({ onSearch, isLoading }: HeaderProps) {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 p-4 pointer-events-none">
-      <div className="flex justify-between items-center max-w-7xl mx-auto">
+    <header className="fixed top-0 left-0 w-full z-50 p-4 px-8 pointer-events-none">
+      <div className="flex justify-between items-center w-full">
         <div className="flex items-center gap-2 pointer-events-auto">
           <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,255,255,0.5)]">
             <span className="text-black font-bold text-xs">SG</span>
