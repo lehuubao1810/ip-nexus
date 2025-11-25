@@ -224,8 +224,18 @@ export async function getIpAssetEdges(
 
 /**
  * List recent IP Assets from the network
+ * 
+ * @param limit - Number of assets to fetch
+ * @param offset - Pagination offset
+ * @param orderBy - Field to order by (default: descendantCount for most remixed)
+ * @param orderDirection - Sort direction (default: desc)
  */
-export async function listRecentIpAssets(limit: number = 20, offset: number = 0): Promise<IPAsset[]> {
+export async function listRecentIpAssets(
+  limit: number = 20,
+  offset: number = 0,
+  orderBy: string = 'descendantCount',
+  orderDirection: 'asc' | 'desc' = 'desc'
+): Promise<IPAsset[]> {
   const response = await fetch(`${BASE_URL}/assets`, {
     method: 'POST',
     headers: {
@@ -233,8 +243,8 @@ export async function listRecentIpAssets(limit: number = 20, offset: number = 0)
       'X-Api-Key': STORY_API_KEY,
     },
     body: JSON.stringify({
-      orderBy: 'blockNumber',
-      orderDirection: 'desc',
+      orderBy,
+      orderDirection,
       pagination: {
         limit,
         offset,

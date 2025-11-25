@@ -52,10 +52,10 @@ function HomeContent() {
     return (
       <main className="relative w-full h-screen overflow-hidden bg-[#050510]">
         {/* Background Grid Effect */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none" />
         
         {/* Radial Gradient for depth */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050510_100%)] pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none" />
 
         <Header onSearch={handleSearch} isLoading={false} />
         

@@ -4,29 +4,58 @@ import { useState, useEffect } from 'react';
 import { listRecentIpAssets, IPAsset } from '@/lib/story-api';
 import { ImageIcon, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface IPAssetsListProps {
   onSelectAsset: (ipId: string) => void;
 }
+
+type SortOption = {
+  label: string;
+  orderBy: string;
+  orderDirection: 'asc' | 'desc';
+};
+
+const SORT_OPTIONS: SortOption[] = [
+  { label: 'Most Remixed', orderBy: 'descendantCount', orderDirection: 'desc' },
+  { label: 'Recently Created', orderBy: 'blockNumber', orderDirection: 'desc' },
+];
 
 export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
   const [assets, setAssets] = useState<IPAsset[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [sortBy, setSortBy] = useState<string>('descendantCount-desc'); // Default: Most Remixed
   const ITEMS_PER_PAGE = 20;
 
   useEffect(() => {
-    loadAssets();
+    // Reset when sort changes
+    setPage(0);
+    setAssets([]);
+    loadAssets(0);
+  }, [sortBy]);
+
+  useEffect(() => {
+    if (page > 0) {
+      loadAssets(page);
+    }
   }, [page]);
 
-  const loadAssets = async () => {
+  const loadAssets = async (currentPage: number) => {
     setLoading(true);
     try {
-      const offset = page * ITEMS_PER_PAGE;
-      const newAssets = await listRecentIpAssets(ITEMS_PER_PAGE, offset);
+      const offset = currentPage * ITEMS_PER_PAGE;
+      const [orderBy, orderDirection] = sortBy.split('-') as [string, 'asc' | 'desc'];
+      const newAssets = await listRecentIpAssets(ITEMS_PER_PAGE, offset, orderBy, orderDirection);
       
-      if (page === 0) {
+      if (currentPage === 0) {
         setAssets(newAssets);
         console.log("newAssets", newAssets);
       } else {
@@ -59,12 +88,35 @@ export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
   };
 
   return (
-    <div className="w-full h-full overflow-auto p-8 custom-scrollbar">
+    <div className="w-full h-full overflow-auto p-8 custom-scrollbar pt-20">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-4xl font-bold text-white mb-2">IP Assets</h1>
-          <p className="text-gray-400">Browse IP assets on Story Protocol Mainnet</p>
+          <div className="flex items-center justify-between">
+            <p className="text-gray-400">Browse IP assets on Story Protocol Mainnet</p>
+            
+            {/* Sort Filter */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400">Sort by:</span>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[180px] bg-white/[0.05] border-white/10 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#0a0a15] border-white/10">
+                  {SORT_OPTIONS.map((option) => (
+                    <SelectItem 
+                      key={`${option.orderBy}-${option.orderDirection}`} 
+                      value={`${option.orderBy}-${option.orderDirection}`}
+                      className="text-white hover:bg-white/10"
+                    >
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
 
         {/* Table */}
