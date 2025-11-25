@@ -79,7 +79,8 @@ function HomeContent() {
       <div className="fixed top-24 left-8 z-10">
         <Button
           onClick={handleBackToList}
-          className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-100 backdrop-blur-sm shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all hover:shadow-[0_0_30px_rgba(0,255,255,0.5)] group"
+          className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-100 backdrop-blur-sm shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all hover:shadow-[0_0_30px_rgba(0,255,255,0.5)] group
+          cursor-pointer"
           size="lg"
         >
           <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
@@ -121,7 +122,8 @@ function HomeContent() {
             <div className="fixed bottom-8 left-8 z-10">
               <Button
                 onClick={loadMoreEdges}
-                className="bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 text-purple-100 backdrop-blur-sm shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-all hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] group"
+                className="bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 text-purple-100 backdrop-blur-sm shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-all hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] group
+                cursor-pointer"
                 size="lg"
               >
                 <ChevronDown className="w-5 h-5 mr-2 group-hover:translate-y-1 transition-transform duration-300" />
@@ -134,7 +136,7 @@ function HomeContent() {
           <div className="fixed bottom-8 right-8 z-10">
             <Button
               onClick={() => resetView?.()}
-              className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-100 backdrop-blur-sm shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all hover:shadow-[0_0_30px_rgba(0,255,255,0.5)] group"
+              className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-100 backdrop-blur-sm shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all hover:shadow-[0_0_30px_rgba(0,255,255,0.5)] group cursor-pointer"
               size="lg"
             >
               <RotateCcw className="w-5 h-5 mr-2 group-hover:rotate-180 transition-transform duration-500" />

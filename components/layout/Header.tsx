@@ -1,6 +1,6 @@
-import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 interface HeaderProps {
   onSearch: (ipId: string) => void;
@@ -8,7 +8,7 @@ interface HeaderProps {
 }
 
 export default function Header({ onSearch, isLoading }: HeaderProps) {
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
 
   const handleSearch = () => {
     const trimmed = searchValue.trim();
@@ -18,7 +18,7 @@ export default function Header({ onSearch, isLoading }: HeaderProps) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
@@ -26,12 +26,17 @@ export default function Header({ onSearch, isLoading }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 w-full z-50 p-4 px-8 pointer-events-none">
       <div className="flex justify-between items-center w-full">
-        <div className="flex items-center gap-2 pointer-events-auto">
-          <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,255,255,0.5)]">
-            <span className="text-black font-bold text-xs">SG</span>
+        <div className="flex items-center gap-3 pointer-events-auto">
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-cyan-500/50 shadow-[0_0_15px_rgba(0,255,255,0.3)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.jpg"
+              alt="IP Nexus Logo"
+              className="w-full h-full object-cover"
+            />
           </div>
           <h1 className="text-xl font-bold tracking-widest text-white uppercase drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
-            Story Graph
+            IP Nexus
           </h1>
         </div>
 
@@ -44,7 +49,7 @@ export default function Header({ onSearch, isLoading }: HeaderProps) {
           {!isLoading && (
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-cyan-500/50 w-4 h-4" />
           )}
-          <Input 
+          <Input
             className="w-full pl-10 pr-4 py-2 bg-[#0a0b1e]/80 border border-cyan-500/30 rounded-lg 
                      text-cyan-100 placeholder:text-cyan-200/50
                      focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400

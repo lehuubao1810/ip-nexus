@@ -1,12 +1,15 @@
-import { IPAsset } from '@/lib/story-api';
-import { ImageIcon } from 'lucide-react';
+import { IPAsset } from "@/lib/story-api";
+import { ImageIcon } from "lucide-react";
 
 interface EmptyStateProps {
   recentAssets: IPAsset[];
   onSelectAsset: (ipId: string) => void;
 }
 
-export default function EmptyState({ recentAssets, onSelectAsset }: EmptyStateProps) {
+export default function EmptyState({
+  recentAssets,
+  onSelectAsset,
+}: EmptyStateProps) {
   if (recentAssets.length === 0) {
     return (
       <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -14,9 +17,12 @@ export default function EmptyState({ recentAssets, onSelectAsset }: EmptyStatePr
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/30">
             <ImageIcon className="w-10 h-10 text-cyan-500/50" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-3">No IP Assets Loaded</h2>
+          <h2 className="text-2xl font-bold text-white mb-3">
+            Welcome to IP Nexus
+          </h2>
           <p className="text-gray-400 mb-6">
-            Enter an IP Asset ID in the search bar above to explore the Story Protocol graph.
+            Enter an IP Asset ID in the search bar above to explore the
+            genealogy graph.
           </p>
         </div>
       </div>
@@ -27,8 +33,12 @@ export default function EmptyState({ recentAssets, onSelectAsset }: EmptyStatePr
     <div className="absolute inset-0 flex items-center justify-center z-10 p-8">
       <div className="max-w-4xl w-full">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-white mb-2">Recent IP Assets</h2>
-          <p className="text-gray-400">Select an IP Asset to explore its genealogy</p>
+          <h2 className="text-3xl font-bold text-white mb-2">
+            Recent IP Assets
+          </h2>
+          <p className="text-gray-400">
+            Select an IP Asset to explore its genealogy
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
@@ -40,11 +50,16 @@ export default function EmptyState({ recentAssets, onSelectAsset }: EmptyStatePr
             >
               {/* Image */}
               <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-gradient-to-br from-cyan-900/20 to-purple-900/20 border border-white/5">
-                {asset.nftMetadata?.image?.cachedUrl || asset.nftMetadata?.image?.originalUrl ? (
+                {asset.nftMetadata?.image?.cachedUrl ||
+                asset.nftMetadata?.image?.originalUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img 
-                    src={asset.nftMetadata.image.cachedUrl || asset.nftMetadata.image.originalUrl || ''} 
-                    alt={asset.name || 'IP Asset'}
+                  <img
+                    src={
+                      asset.nftMetadata.image.cachedUrl ||
+                      asset.nftMetadata.image.originalUrl ||
+                      ""
+                    }
+                    alt={asset.name || "IP Asset"}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
@@ -56,7 +71,9 @@ export default function EmptyState({ recentAssets, onSelectAsset }: EmptyStatePr
 
               {/* Name */}
               <h3 className="text-white font-semibold mb-1 truncate">
-                {asset.name || asset.nftMetadata?.name || `IP #${asset.tokenId}`}
+                {asset.name ||
+                  asset.nftMetadata?.name ||
+                  `IP #${asset.tokenId}`}
               </h3>
 
               {/* ID */}
