@@ -71,6 +71,31 @@ export default function ArkhamGraph({ data, onNodeClick, onReady }: ArkhamGraphP
     loadImages();
   }, [data]);
 
+  useEffect(() => {
+    // Đặt trong setTimeout để đảm bảo ref đã mount vào DOM
+    const timer = setTimeout(() => {
+      const fg = graphRef.current;
+      if (fg) {
+        // 1. Tinh chỉnh lực ĐẨY (Charge) - Giảm rung lắc
+        // strength: -100 đến -300 là vừa phải. Quá cao (-1000) sẽ gây rung.
+        fg.d3Force('charge').strength(-200).distanceMax(300);
+
+        // 2. Tinh chỉnh VA CHẠM (Collide) - Để node không đè lên nhau
+        // radius: tăng lên một chút so với kích thước node
+        fg.d3Force('collide', forceCollide(15).strength(1)); // Strength 1 = cứng tuyệt đối
+
+        // 3. Tinh chỉnh LIÊN KẾT (Link)
+        fg.d3Force('link').distance(70).strength(1); // Dây cứng và ngắn để graph gọn
+
+        // QUAN TRỌNG NHẤT: Kích hoạt lại mô phỏng để áp dụng lực mới
+        // Nếu không có dòng này, các dòng trên vô nghĩa.
+        fg.d3ReheatSimulation(); 
+      }
+    }, 100); // Delay nhẹ 100ms chờ graph init
+
+    return () => clearTimeout(timer);
+  }, [data, isGraphReady]); // Chạy lại khi data đổi hoặc graph báo ready
+
 
 
   const nodeCanvasObject = useCallback((node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
@@ -131,7 +156,7 @@ export default function ArkhamGraph({ data, onNodeClick, onReady }: ArkhamGraphP
   }, [images, data]);
 
   const nodePointerAreaPaint = useCallback((node: any, color: string, ctx: CanvasRenderingContext2D) => {
-    const size = 8;
+    const size = 20; // Increased hit area for easier clicking
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.arc(node.x, node.y, size, 0, 2 * Math.PI, false);
@@ -164,44 +189,36 @@ export default function ArkhamGraph({ data, onNodeClick, onReady }: ArkhamGraphP
         linkDirectionalParticleWidth={2}
         linkDirectionalParticleColor={() => '#00FFFF'}
         onNodeClick={(node) => onNodeClick && onNodeClick(node as GraphNode)}
-        // Balanced force parameters for spacing + stability
-        d3AlphaDecay={0.015} // Faster cooling to settle quickly
-        d3VelocityDecay={0.6} // Strong damping to prevent oscillation
-        warmupTicks={100} // Pre-calculate for initial spread
-        cooldownTicks={200} // Enough time to settle
+        // Maximum stability parameters
+        // d3AlphaDecay={0.05} // Very fast cooling to freeze layout quickly
+        // d3VelocityDecay={0.8} // High friction to stop movement/oscillation
+        // warmupTicks={100} // Pre-calculate
+// 1. cooldownTicks: Số bước tính toán. 
+        // Để thấp (0) thì graph đứng im ngay lập tức (nhưng vị trí xấu).
+        // Để 100 là vừa đủ để nó bung ra rồi dừng.
+        cooldownTicks={100}
+
+        // 2. Alpha Decay: Tốc độ làm lạnh.
+        // Mặc định ~0.0228. Tăng lên 0.1 để ép biểu đồ dừng nhanh gấp 5 lần.
+        // Đây là "phanh" chính để chống rung mãi không dừng.
+        d3AlphaDecay={0.1} 
+
+        // 3. Velocity Decay: Độ nhớt môi trường (Ma sát).
+        // Tăng lên 0.8 (tối đa là 1). 
+        // Giúp node di chuyển chậm rãi, đầm chắc, không bị văng.
+        d3VelocityDecay={0.8}
+
+        // 4. Warmup: Tính toán ngầm trước khi vẽ
+        warmupTicks={50}
+
+        // XỬ LÝ KHI DỪNG (Đã loại bỏ vòng lặp vô tận)
         onEngineStop={() => {
-          // Configure D3 forces for good spacing without instability
-          const fg = graphRef.current;
-          if (fg) {
-            // Moderate repulsion - strong enough for spacing, not too strong for stability
-            const chargeForce = fg.d3Force('charge');
-            if (chargeForce) {
-              chargeForce.strength(-400); // Balanced repulsion
-              chargeForce.distanceMax(300); // Reasonable distance
-            }
-            
-            // Moderate link distance
-            const linkForce = fg.d3Force('link');
-            if (linkForce) {
-              linkForce.distance(120); // Good spacing
-              linkForce.strength(0.5); // Reduce link strength for flexibility
-            }
-            
-            // Collision force for overlap prevention
-            fg.d3Force('collide', forceCollide(45).strength(0.7).iterations(2));
-            
-            // Restart simulation briefly
-            fg.d3ReheatSimulation();
+          // Chỉ zoom và ẩn loading, KHÔNG can thiệp lực ở đây nữa
+          if (!isGraphReady) {
+             setIsGraphReady(true);
+             graphRef.current?.zoomToFit(400, 50);
+             onReady?.(() => graphRef.current?.zoomToFit(400, 50));
           }
-          
-          // Zoom to fit after forces are configured
-          setTimeout(() => {
-            graphRef.current?.zoomToFit(400, 100);
-            setIsGraphReady(true); // Reveal graph when ready
-            if (onReady) {
-              onReady(() => graphRef.current?.zoomToFit(400, 100));
-            }
-          }, 300); // Wait a bit for reheat to settle
         }}
       />
     </div>
