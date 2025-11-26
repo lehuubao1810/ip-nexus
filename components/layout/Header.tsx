@@ -1,6 +1,7 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import NetworkSwitcher from "../NetworkSwitcher";
 
 interface HeaderProps {
   onSearch: (ipId: string) => void;
@@ -38,6 +39,9 @@ export default function Header({ onSearch, isLoading }: HeaderProps) {
           <h1 className="text-xl font-bold tracking-widest text-white uppercase drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
             IP Nexus
           </h1>
+          <div className="ml-2">
+            <NetworkSwitcher />
+          </div>
         </div>
 
         <div className="relative w-96 pointer-events-auto">

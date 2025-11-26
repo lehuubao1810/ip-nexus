@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { listRecentIpAssets, IPAsset } from "@/lib/story-api";
+import { listRecentIpAssets, IPAsset, Network } from "@/lib/story-api";
 import { ImageIcon, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import {
@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSearchParams } from "next/navigation";
 
 interface IPAssetsListProps {
   onSelectAsset: (ipId: string) => void;
@@ -35,12 +36,15 @@ export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
   const [sortBy, setSortBy] = useState<string>("descendantCount-desc"); // Default: Most Remixed
   const ITEMS_PER_PAGE = 20;
 
+  const searchParams = useSearchParams();
+  const network = (searchParams.get("network") as Network) || "mainnet";
+
   useEffect(() => {
-    // Reset when sort changes
+    // Reset when sort or network changes
     setPage(0);
     setAssets([]);
     loadAssets(0);
-  }, [sortBy]);
+  }, [sortBy, network]);
 
   useEffect(() => {
     if (page > 0) {
@@ -60,7 +64,8 @@ export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
         ITEMS_PER_PAGE,
         offset,
         orderBy,
-        orderDirection
+        orderDirection,
+        network
       );
 
       if (currentPage === 0) {

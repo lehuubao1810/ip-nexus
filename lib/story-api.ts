@@ -1,16 +1,27 @@
 /**
- * Story Protocol API Client for Story Mainnet
- * 
+ * Story Protocol API Client
+ *
  * API Documentation: https://docs.story.foundation/api-reference/protocol/introduction
- * Base URL: https://api.storyapis.com/api/v4
- * Network: Story Mainnet (Chain ID: 1514)
- * RPC: https://mainnet.storyrpc.io
- * Explorer: https://www.storyscan.io/
+ * Base URL Mainnet: https://api.storyapis.com/api/v4
+ * Base URL Testnet: https://staging-api.storyprotocol.net/api/v4
  */
 
 // Mainnet API Key (production)
-const STORY_API_KEY = 'MhBsxkU1z9fG6TofE59KqiiWV-YlYE8Q4awlLQehF3U';
-const BASE_URL = 'https://api.storyapis.com/api/v4';
+const STORY_API_KEY = "MhBsxkU1z9fG6TofE59KqiiWV-YlYE8Q4awlLQehF3U";
+const STORY_API_KEY_TESTNET = "Hils8o7iULtuuK45KBQ2SUEJmGKseUgRh-dRsX57RS0";
+
+const BASE_URL_MAINNET = "https://api.storyapis.com/api/v4";
+const BASE_URL_TESTNET = "https://staging-api.storyprotocol.net/api/v4";
+
+export type Network = "mainnet" | "testnet";
+
+const getBaseUrl = (network: Network = "mainnet") => {
+  return network === "mainnet" ? BASE_URL_MAINNET : BASE_URL_TESTNET;
+};
+
+const getApiKey = (network: Network = "mainnet") => {
+  return network === "mainnet" ? STORY_API_KEY : STORY_API_KEY_TESTNET;
+};
 
 export interface IPAsset {
   id: string; // ipId
@@ -75,12 +86,15 @@ interface ListEdgesResponse {
 /**
  * Fetch IP Assets by ID
  */
-export async function getIpAsset(ipId: string): Promise<IPAsset | null> {
-  const response = await fetch(`${BASE_URL}/assets`, {
-    method: 'POST',
+export async function getIpAsset(
+  ipId: string,
+  network: Network = "mainnet"
+): Promise<IPAsset | null> {
+  const response = await fetch(`${getBaseUrl(network)}/assets`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-Api-Key': STORY_API_KEY,
+      "Content-Type": "application/json",
+      "X-Api-Key": getApiKey(network),
     },
     body: JSON.stringify({
       where: {
@@ -99,26 +113,29 @@ export async function getIpAsset(ipId: string): Promise<IPAsset | null> {
 
   const data: ListAssetsResponse = await response.json();
   const asset = data.data[0];
-  
+
   // Ensure id field matches ipId for backward compatibility
   if (asset) {
     asset.id = asset.ipId;
   }
-  
+
   return asset || null;
 }
 
 /**
  * Fetch multiple IP Assets by IDs
  */
-export async function getIpAssets(ipIds: string[]): Promise<IPAsset[]> {
+export async function getIpAssets(
+  ipIds: string[],
+  network: Network = "mainnet"
+): Promise<IPAsset[]> {
   if (ipIds.length === 0) return [];
 
-  const response = await fetch(`${BASE_URL}/assets`, {
-    method: 'POST',
+  const response = await fetch(`${getBaseUrl(network)}/assets`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-Api-Key': STORY_API_KEY,
+      "Content-Type": "application/json",
+      "X-Api-Key": getApiKey(network),
     },
     body: JSON.stringify({
       where: {
@@ -136,9 +153,9 @@ export async function getIpAssets(ipIds: string[]): Promise<IPAsset[]> {
   }
 
   const data: ListAssetsResponse = await response.json();
-  
+
   // Ensure id field matches ipId for backward compatibility
-  return data.data.map(asset => ({
+  return data.data.map((asset) => ({
     ...asset,
     id: asset.ipId,
   }));
@@ -147,28 +164,33 @@ export async function getIpAssets(ipIds: string[]): Promise<IPAsset[]> {
 /**
  * Fetch parent-child relationships for an IP Asset
  * Supports progressive loading with limit and offset
- * 
+ *
  * @param ipId - The IP Asset ID
  * @param limit - Maximum number of edges to fetch (default 100)
  * @param offset - Starting offset for pagination (default 0)
+ * @param network - Network to fetch from (default 'mainnet')
  * @returns Object with parents, children arrays, hasMore flag, and totalLoaded count
  */
 export async function getIpAssetEdges(
   ipId: string,
   limit: number = 100,
-  offset: number = 0
+  offset: number = 0,
+  network: Network = "mainnet"
 ): Promise<{
   parents: IPAssetEdge[];
   children: IPAssetEdge[];
   hasMore: boolean;
   totalLoaded: number;
 }> {
+  const baseUrl = getBaseUrl(network);
+  const apiKey = getApiKey(network);
+
   // Fetch edges where this IP is the child (to get parents)
-  const parentsResponse = await fetch(`${BASE_URL}/assets/edges`, {
-    method: 'POST',
+  const parentsResponse = await fetch(`${baseUrl}/assets/edges`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-Api-Key': STORY_API_KEY,
+      "Content-Type": "application/json",
+      "X-Api-Key": apiKey,
     },
     body: JSON.stringify({
       where: {
@@ -182,11 +204,11 @@ export async function getIpAssetEdges(
   });
 
   // Fetch edges where this IP is the parent (to get children)
-  const childrenResponse = await fetch(`${BASE_URL}/assets/edges`, {
-    method: 'POST',
+  const childrenResponse = await fetch(`${baseUrl}/assets/edges`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-Api-Key': STORY_API_KEY,
+      "Content-Type": "application/json",
+      "X-Api-Key": apiKey,
     },
     body: JSON.stringify({
       where: {
@@ -200,7 +222,7 @@ export async function getIpAssetEdges(
   });
 
   if (!parentsResponse.ok || !childrenResponse.ok) {
-    throw new Error('Failed to fetch IP Asset edges');
+    throw new Error("Failed to fetch IP Asset edges");
   }
 
   const parentsData: ListEdgesResponse = await parentsResponse.json();
@@ -209,9 +231,10 @@ export async function getIpAssetEdges(
   const parents = parentsData.data || [];
   const children = childrenData.data || [];
   const totalLoaded = parents.length + children.length;
-  
+
   // Check if there are more edges available
-  const hasMore = parentsData.pagination.hasMore || childrenData.pagination.hasMore;
+  const hasMore =
+    parentsData.pagination.hasMore || childrenData.pagination.hasMore;
 
   return {
     parents,
@@ -221,26 +244,27 @@ export async function getIpAssetEdges(
   };
 }
 
-
 /**
  * List recent IP Assets from the network
- * 
+ *
  * @param limit - Number of assets to fetch
  * @param offset - Pagination offset
  * @param orderBy - Field to order by (default: descendantCount for most remixed)
  * @param orderDirection - Sort direction (default: desc)
+ * @param network - Network to fetch from (default 'mainnet')
  */
 export async function listRecentIpAssets(
   limit: number = 20,
   offset: number = 0,
-  orderBy: string = 'descendantCount',
-  orderDirection: 'asc' | 'desc' = 'desc'
+  orderBy: string = "descendantCount",
+  orderDirection: "asc" | "desc" = "desc",
+  network: Network = "mainnet"
 ): Promise<IPAsset[]> {
-  const response = await fetch(`${BASE_URL}/assets`, {
-    method: 'POST',
+  const response = await fetch(`${getBaseUrl(network)}/assets`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-Api-Key': STORY_API_KEY,
+      "Content-Type": "application/json",
+      "X-Api-Key": getApiKey(network),
     },
     body: JSON.stringify({
       orderBy,
@@ -257,11 +281,10 @@ export async function listRecentIpAssets(
   }
 
   const data: ListAssetsResponse = await response.json();
-  
+
   // Ensure id field matches ipId for backward compatibility
-  return data.data.map(asset => ({
+  return data.data.map((asset) => ({
     ...asset,
     id: asset.ipId,
   }));
 }
-

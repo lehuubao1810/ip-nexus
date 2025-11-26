@@ -9,9 +9,11 @@ import {
   getIpAssets,
   getIpAssetEdges,
   IPAssetEdge,
+  Network,
 } from "@/lib/story-api";
 import { transformToGraphData, getNeighborIds } from "@/lib/transform-ip-data";
 import { GraphData } from "@/lib/mock-data";
+import { useSearchParams } from "next/navigation";
 
 const EDGES_PER_BATCH = 100;
 const MAX_EDGES = 200;
@@ -36,6 +38,9 @@ export function useIpGraphData(): UseIpGraphDataResult {
   } | null>(null);
   const [hasMore, setHasMore] = useState(false);
 
+  const searchParams = useSearchParams();
+  const network = (searchParams.get("network") as Network) || "mainnet";
+
   // Store state for progressive loading
   const [currentIpId, setCurrentIpId] = useState<string | null>(null);
   const [currentOffset, setCurrentOffset] = useState(0);
@@ -47,65 +52,76 @@ export function useIpGraphData(): UseIpGraphDataResult {
     children: [],
   });
 
-  const fetchIpGraph = useCallback(async (ipId: string) => {
-    // Reset state for new IP
-    setLoading(true);
-    setData(null); // Clear old data to show loading state
-    setError(null);
-    setLoadingProgress({ current: 0, estimated: EDGES_PER_BATCH });
-    setCurrentIpId(ipId);
-    setCurrentOffset(0);
-    setAllEdges({ parents: [], children: [] });
+  const fetchIpGraph = useCallback(
+    async (ipId: string) => {
+      // Reset state for new IP
+      setLoading(true);
+      setData(null); // Clear old data to show loading state
+      setError(null);
+      setLoadingProgress({ current: 0, estimated: EDGES_PER_BATCH });
+      setCurrentIpId(ipId);
+      setCurrentOffset(0);
+      setAllEdges({ parents: [], children: [] });
 
-    try {
-      // Step 1: Fetch the central IP Asset
-      const centralAsset = await getIpAsset(ipId);
+      try {
+        // Step 1: Fetch the central IP Asset
+        const centralAsset = await getIpAsset(ipId, network);
 
-      if (!centralAsset) {
-        throw new Error(
-          "IP Asset not found. Please check the IP ID and try again."
+        if (!centralAsset) {
+          throw new Error(
+            "IP Asset not found. Please check the IP ID and try again."
+          );
+        }
+
+        // Step 2: Fetch first batch of edges
+        const edgesResult = await getIpAssetEdges(
+          ipId,
+          EDGES_PER_BATCH,
+          0,
+          network
         );
+        const {
+          parents,
+          children,
+          hasMore: moreAvailable,
+          totalLoaded,
+        } = edgesResult;
+
+        setAllEdges({ parents, children });
+        setLoadingProgress({
+          current: totalLoaded,
+          estimated: EDGES_PER_BATCH,
+        });
+        setHasMore(moreAvailable && totalLoaded < MAX_EDGES);
+        setCurrentOffset(EDGES_PER_BATCH);
+
+        // Step 3: Get neighbor IDs and fetch neighbor assets
+        const allEdgesArray = [...parents, ...children];
+        const neighborIds = getNeighborIds(ipId, { parents, children });
+        const neighborAssets =
+          neighborIds.length > 0 ? await getIpAssets(neighborIds, network) : [];
+
+        // Step 4: Transform to graph format
+        const graphData = transformToGraphData(
+          centralAsset,
+          neighborAssets,
+          allEdgesArray
+        );
+
+        setData(graphData);
+        setLoadingProgress(null); // Hide progress when done
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "An unknown error occurred";
+        setError(message);
+        console.error("Error fetching IP graph:", err);
+        setLoadingProgress(null);
+      } finally {
+        setLoading(false);
       }
-
-      // Step 2: Fetch first batch of edges
-      const edgesResult = await getIpAssetEdges(ipId, EDGES_PER_BATCH, 0);
-      const {
-        parents,
-        children,
-        hasMore: moreAvailable,
-        totalLoaded,
-      } = edgesResult;
-
-      setAllEdges({ parents, children });
-      setLoadingProgress({ current: totalLoaded, estimated: EDGES_PER_BATCH });
-      setHasMore(moreAvailable && totalLoaded < MAX_EDGES);
-      setCurrentOffset(EDGES_PER_BATCH);
-
-      // Step 3: Get neighbor IDs and fetch neighbor assets
-      const allEdgesArray = [...parents, ...children];
-      const neighborIds = getNeighborIds(ipId, { parents, children });
-      const neighborAssets =
-        neighborIds.length > 0 ? await getIpAssets(neighborIds) : [];
-
-      // Step 4: Transform to graph format
-      const graphData = transformToGraphData(
-        centralAsset,
-        neighborAssets,
-        allEdgesArray
-      );
-
-      setData(graphData);
-      setLoadingProgress(null); // Hide progress when done
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "An unknown error occurred";
-      setError(message);
-      console.error("Error fetching IP graph:", err);
-      setLoadingProgress(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [network]
+  );
 
   const loadMoreEdges = useCallback(async () => {
     if (!currentIpId || loading || !hasMore) return;
@@ -122,7 +138,8 @@ export function useIpGraphData(): UseIpGraphDataResult {
       const edgesResult = await getIpAssetEdges(
         currentIpId,
         EDGES_PER_BATCH,
-        currentOffset
+        currentOffset,
+        network
       );
       const {
         parents: newParents,
@@ -146,7 +163,7 @@ export function useIpGraphData(): UseIpGraphDataResult {
       setCurrentOffset(currentOffset + EDGES_PER_BATCH);
 
       // Fetch the central asset again (should be cached)
-      const centralAsset = await getIpAsset(currentIpId);
+      const centralAsset = await getIpAsset(currentIpId, network);
       if (!centralAsset) return;
 
       // Get all neighbor IDs and fetch neighbor assets
@@ -156,7 +173,7 @@ export function useIpGraphData(): UseIpGraphDataResult {
       ];
       const neighborIds = getNeighborIds(currentIpId, combinedEdges);
       const neighborAssets =
-        neighborIds.length > 0 ? await getIpAssets(neighborIds) : [];
+        neighborIds.length > 0 ? await getIpAssets(neighborIds, network) : [];
 
       // Transform to graph format with all edges
       const graphData = transformToGraphData(
