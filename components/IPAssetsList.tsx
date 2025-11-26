@@ -100,6 +100,14 @@ export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
     });
   };
 
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
   return (
     <div className="w-full h-full overflow-auto p-8 custom-scrollbar pt-20">
       <div className="max-w-[1600px] mx-auto">
@@ -276,9 +284,14 @@ export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
 
                     {/* Created Date */}
                     <td className="p-4">
-                      <span className="text-sm text-gray-400">
-                        {formatDate(asset.createdAt)}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-sm text-gray-400">
+                          {formatDate(asset.createdAt)}
+                        </span>
+                        <span className="text-xs text-gray-600">
+                          {formatTime(asset.createdAt)}
+                        </span>
+                      </div>
                     </td>
 
                     {/* Action */}
