@@ -334,7 +334,7 @@ export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
             <div className="p-6 text-center border-t border-white/10">
               <Button
                 onClick={loadMore}
-                className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-100"
+                className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-100 cursor-pointer"
               >
                 Load More
               </Button>

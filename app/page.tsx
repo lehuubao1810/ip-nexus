@@ -1,27 +1,44 @@
-'use client';
+"use client";
 
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { RotateCcw, AlertCircle, ArrowLeft, ChevronDown, Loader, LoaderIcon } from 'lucide-react';
-import Header from '@/components/layout/Header';
-import Sidebar from '@/components/layout/Sidebar';
-import ArkhamGraph from '@/components/viz/ArkhamGraph';
-import IPAssetsList from '@/components/IPAssetsList';
-import { LoadingProgress } from '@/components/LoadingProgress';
-import { GraphNode } from '@/lib/mock-data';
-import { Button } from '@/components/ui/button';
-import { useIpGraphData } from '@/hooks/useIpGraphData';
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import {
+  RotateCcw,
+  AlertCircle,
+  ArrowLeft,
+  ChevronDown,
+  Loader,
+  LoaderIcon,
+} from "lucide-react";
+import Header from "@/components/layout/Header";
+import Sidebar from "@/components/layout/Sidebar";
+import ArkhamGraph from "@/components/viz/ArkhamGraph";
+import IPAssetsList from "@/components/IPAssetsList";
+import { LoadingProgress } from "@/components/LoadingProgress";
+import { GraphNode } from "@/lib/mock-data";
+import { Button } from "@/components/ui/button";
+import { useIpGraphData } from "@/hooks/useIpGraphData";
+import AssetInfoPanel from "@/components/AssetInfoPanel";
 
 function HomeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const ipId = searchParams.get('ipId');
+  const ipId = searchParams.get("ipId");
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [resetView, setResetView] = useState<(() => void) | null>(null);
-  
-  const { data, loading, error, fetchIpGraph, loadingProgress, hasMore, loadMoreEdges } = useIpGraphData();
+
+  const {
+    data,
+    centralAsset,
+    loading,
+    error,
+    fetchIpGraph,
+    loadingProgress,
+    hasMore,
+    loadMoreEdges,
+  } = useIpGraphData();
 
   // Fetch graph data when ipId changes
   useEffect(() => {
@@ -40,7 +57,7 @@ function HomeContent() {
   };
 
   const handleBackToList = () => {
-    router.push('/');
+    router.push("/");
   };
 
   const handleSearch = async (searchIpId: string) => {
@@ -53,12 +70,12 @@ function HomeContent() {
       <main className="relative w-full h-screen overflow-hidden bg-[#050510]">
         {/* Background Grid Effect */}
         <div className="absolute inset-0 pointer-events-none" />
-        
+
         {/* Radial Gradient for depth */}
         <div className="absolute inset-0 pointer-events-none" />
 
         <Header onSearch={handleSearch} isLoading={false} />
-        
+
         <IPAssetsList onSelectAsset={handleSelectAsset} />
       </main>
     );
@@ -69,12 +86,12 @@ function HomeContent() {
     <main className="relative w-full h-screen overflow-hidden bg-[#050510]">
       {/* Background Grid Effect */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
-      
+
       {/* Radial Gradient for depth */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050510_100%)] pointer-events-none" />
 
       <Header onSearch={handleSearch} isLoading={loading} />
-      
+
       {/* Back to List Button */}
       <div className="fixed top-24 left-8 z-10">
         <Button
@@ -88,10 +105,11 @@ function HomeContent() {
         </Button>
       </div>
 
+      {/* Asset Info Panel */}
+      <AssetInfoPanel asset={centralAsset} />
+
       {/* Loading Progress */}
-      {loadingProgress && (
-        <LoadingProgress />
-      )}
+      {loadingProgress && <LoadingProgress />}
 
       {/* Error State */}
       {error && (
@@ -99,7 +117,9 @@ function HomeContent() {
           <div className="bg-red-500/10 border border-red-500/30 backdrop-blur-md rounded-lg p-4 flex items-start gap-3 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
             <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h3 className="text-red-200 font-semibold mb-1">Error Loading IP Asset</h3>
+              <h3 className="text-red-200 font-semibold mb-1">
+                Error Loading IP Asset
+              </h3>
               <p className="text-red-300/80 text-sm">{error}</p>
             </div>
           </div>
@@ -110,8 +130,8 @@ function HomeContent() {
       {data ? (
         <>
           <div className="absolute inset-0 z-0">
-            <ArkhamGraph 
-              data={data} 
+            <ArkhamGraph
+              data={data}
               onNodeClick={handleNodeClick}
               onReady={(resetFn) => setResetView(() => resetFn)}
             />
@@ -153,8 +173,8 @@ function HomeContent() {
         </div>
       ) : null}
 
-      <Sidebar 
-        open={isSidebarOpen} 
+      <Sidebar
+        open={isSidebarOpen}
         onOpenChange={setIsSidebarOpen}
         node={selectedNode}
       />
@@ -164,11 +184,13 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <Suspense fallback={
-      <main className="relative w-full h-screen overflow-hidden bg-[#050510] flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-      </main>
-    }>
+    <Suspense
+      fallback={
+        <main className="relative w-full h-screen overflow-hidden bg-[#050510] flex items-center justify-center">
+          <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+        </main>
+      }
+    >
       <HomeContent />
     </Suspense>
   );

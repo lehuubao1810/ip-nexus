@@ -10,6 +10,7 @@ import {
   getIpAssetEdges,
   IPAssetEdge,
   Network,
+  IPAsset,
 } from "@/lib/story-api";
 import { transformToGraphData, getNeighborIds } from "@/lib/transform-ip-data";
 import { GraphData } from "@/lib/mock-data";
@@ -20,6 +21,7 @@ const MAX_EDGES = 200;
 
 interface UseIpGraphDataResult {
   data: GraphData | null;
+  centralAsset: IPAsset | null;
   loading: boolean;
   error: string | null;
   loadingProgress: { current: number; estimated: number } | null;
@@ -30,6 +32,7 @@ interface UseIpGraphDataResult {
 
 export function useIpGraphData(): UseIpGraphDataResult {
   const [data, setData] = useState<GraphData | null>(null);
+  const [centralAsset, setCentralAsset] = useState<IPAsset | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingProgress, setLoadingProgress] = useState<{
@@ -57,6 +60,7 @@ export function useIpGraphData(): UseIpGraphDataResult {
       // Reset state for new IP
       setLoading(true);
       setData(null); // Clear old data to show loading state
+      setCentralAsset(null);
       setError(null);
       setLoadingProgress({ current: 0, estimated: EDGES_PER_BATCH });
       setCurrentIpId(ipId);
@@ -65,13 +69,14 @@ export function useIpGraphData(): UseIpGraphDataResult {
 
       try {
         // Step 1: Fetch the central IP Asset
-        const centralAsset = await getIpAsset(ipId, network);
+        const asset = await getIpAsset(ipId, network);
 
-        if (!centralAsset) {
+        if (!asset) {
           throw new Error(
             "IP Asset not found. Please check the IP ID and try again."
           );
         }
+        setCentralAsset(asset);
 
         // Step 2: Fetch first batch of edges
         const edgesResult = await getIpAssetEdges(
@@ -103,7 +108,7 @@ export function useIpGraphData(): UseIpGraphDataResult {
 
         // Step 4: Transform to graph format
         const graphData = transformToGraphData(
-          centralAsset,
+          asset,
           neighborAssets,
           allEdgesArray
         );
@@ -197,6 +202,7 @@ export function useIpGraphData(): UseIpGraphDataResult {
 
   return {
     data,
+    centralAsset,
     loading,
     error,
     loadingProgress,
