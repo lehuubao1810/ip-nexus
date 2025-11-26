@@ -30,7 +30,7 @@ export default function Header({ onSearch, isLoading }: HeaderProps) {
           <div className="w-10 h-10 rounded-full overflow-hidden border border-cyan-500/50 shadow-[0_0_15px_rgba(0,255,255,0.3)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo.jpg"
+              src="/logo.png"
               alt="IP Nexus Logo"
               className="w-full h-full object-cover"
             />
