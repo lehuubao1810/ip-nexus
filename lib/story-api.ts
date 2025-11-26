@@ -29,6 +29,8 @@ export interface IPAsset {
   blockNumber: number;
   blockTimestamp?: string;
   chainId: string;
+  childrenCount?: number;
+  parentsCount?: number;
   nftMetadata: {
     name?: string;
     description?: string | null;
@@ -51,6 +53,8 @@ export interface IPAsset {
   name: string;
   registrationDate: string;
   createdAt: string;
+  ancestorCount?: number;
+  descendantCount?: number;
 }
 
 export interface IPAssetEdge {

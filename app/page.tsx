@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { RotateCcw, AlertCircle, ArrowLeft, ChevronDown } from 'lucide-react';
+import { RotateCcw, AlertCircle, ArrowLeft, ChevronDown, Loader, LoaderIcon } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import ArkhamGraph from '@/components/viz/ArkhamGraph';
@@ -126,7 +126,7 @@ function HomeContent() {
                 cursor-pointer"
                 size="lg"
               >
-                <ChevronDown className="w-5 h-5 mr-2 group-hover:translate-y-1 transition-transform duration-300" />
+                <LoaderIcon className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
                 Load More Edges
               </Button>
             </div>
@@ -139,7 +139,7 @@ function HomeContent() {
               className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-100 backdrop-blur-sm shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all hover:shadow-[0_0_30px_rgba(0,255,255,0.5)] group cursor-pointer"
               size="lg"
             >
-              <RotateCcw className="w-5 h-5 mr-2 group-hover:rotate-180 transition-transform duration-500" />
+              <RotateCcw className="w-5 h-5 mr-2 group-hover:-rotate-180 transition-transform duration-500" />
               Reset View
             </Button>
           </div>

@@ -102,7 +102,7 @@ export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
 
   return (
     <div className="w-full h-full overflow-auto p-8 custom-scrollbar pt-20">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1600px] mx-auto">
         {/* Header */}
         <div className="mb-8">
           {/* <div className="flex items-center gap-4 mb-4">
@@ -143,21 +143,21 @@ export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
           </div> */}
 
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-white">Recent Assets</h2>
+            <h2 className="text-2xl font-bold text-white">List Assets</h2>
 
             {/* Sort Filter */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-400">Sort by:</span>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[180px] bg-white/[0.05] border-white/10 text-white">
+                <SelectTrigger className="w-[180px] bg-white/[0.05] border-white/10 cursor-pointer text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0a0a15] border-white/10">
+                <SelectContent className="bg-[#0a0a15] border-white/10 cursor-pointer">
                   {SORT_OPTIONS.map((option) => (
                     <SelectItem
                       key={`${option.orderBy}-${option.orderDirection}`}
                       value={`${option.orderBy}-${option.orderDirection}`}
-                      className="text-white hover:bg-white/10"
+                      className="text-white hover:bg-white/10 cursor-pointer"
                     >
                       {option.label}
                     </SelectItem>
@@ -179,6 +179,12 @@ export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
                   </th>
                   <th className="text-left p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     IP ID
+                  </th>
+                  <th className="text-left p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Parents
+                  </th>
+                  <th className="text-left p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Children
                   </th>
                   <th className="text-left p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     Owner
@@ -247,6 +253,20 @@ export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
                       </code>
                     </td>
 
+                    {/* Parents */}
+                    <td className="p-4">
+                      <span className="text-sm text-gray-400">
+                        {asset.parentsCount || "-"}
+                      </span>
+                    </td>
+
+                    {/* Children */}
+                    <td className="p-4">
+                      <span className="text-sm text-gray-400">
+                        {asset.childrenCount || "-"}
+                      </span>
+                    </td>
+
                     {/* Owner */}
                     <td className="p-4">
                       <code className="text-xs font-mono text-gray-400">
@@ -287,6 +307,12 @@ export default function IPAssetsList({ onSelectAsset }: IPAssetsListProps) {
                         </td>
                         <td className="p-4">
                           <div className="h-6 w-24 bg-white/5 rounded animate-pulse" />
+                        </td>
+                        <td className="p-4">
+                          <div className="h-4 w-12 bg-white/5 rounded animate-pulse" />
+                        </td>
+                        <td className="p-4">
+                          <div className="h-4 w-12 bg-white/5 rounded animate-pulse" />
                         </td>
                         <td className="p-4">
                           <div className="h-4 w-20 bg-white/5 rounded animate-pulse" />
