@@ -69,7 +69,7 @@ export default function Sidebar({ open, onOpenChange, node }: SidebarProps) {
           <div className="space-y-3 pt-6 border-t border-white/5">
             <div className="flex justify-between items-center">
               <span className="text-xs text-gray-500 uppercase tracking-wider">
-                IP Address
+                IP ID
               </span>
               <div className="flex items-center gap-2">
                 <code
@@ -96,7 +96,7 @@ export default function Sidebar({ open, onOpenChange, node }: SidebarProps) {
           </div>
 
           <div className="grid grid-cols-2 gap-4 pt-4">
-            <div className="p-4 rounded-lg bg-white/5 border border-white/5">
+            <div className="p-2 pt-4 rounded-lg bg-white/5 border border-white/5">
               <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
                 Node Type
               </div>
@@ -108,7 +108,7 @@ export default function Sidebar({ open, onOpenChange, node }: SidebarProps) {
                 {node.type}
               </div>
             </div>
-            <div className="p-4 rounded-lg bg-white/5 border border-white/5">
+            <div className="p-2 pt-4 rounded-lg bg-white/5 border border-white/5">
               <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
                 Status
               </div>

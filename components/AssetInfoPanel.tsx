@@ -2,7 +2,14 @@
 
 import { IPAsset } from "@/lib/story-api";
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Copy, Check, FileText } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Check,
+  FileText,
+  ExternalLink,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 
@@ -47,14 +54,15 @@ export default function AssetInfoPanel({ asset }: AssetInfoPanelProps) {
           <label className="text-xs text-cyan-500/70 uppercase tracking-wider font-mono">
             IP ID
           </label>
-          <div className="flex items-center gap-2 bg-cyan-950/30 p-2 rounded border border-cyan-500/20 group hover:border-cyan-500/40 transition-colors">
+          <div
+            className="flex items-center gap-2 bg-cyan-950/30 p-2 rounded border border-cyan-500/20 group hover:border-cyan-500/40 
+          transition-colors cursor-pointer"
+            onClick={handleCopy}
+          >
             <code className="text-xs font-mono text-cyan-300 truncate flex-1">
               {asset.ipId}
             </code>
-            <button
-              onClick={handleCopy}
-              className="text-cyan-500 hover:text-cyan-300 transition-colors cursor-pointer"
-            >
+            <button className="text-cyan-500 hover:text-cyan-300 transition-colors">
               {copied ? (
                 <Check className="w-3.5 h-3.5" />
               ) : (
@@ -62,6 +70,24 @@ export default function AssetInfoPanel({ asset }: AssetInfoPanelProps) {
               )}
             </button>
           </div>
+        </div>
+
+        {/* Owner Address */}
+        <div className="space-y-1">
+          <label className="text-xs text-cyan-500/70 uppercase tracking-wider font-mono">
+            Owner
+          </label>
+          <a
+            href={`https://www.storyscan.io/address/${asset.ownerAddress}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-cyan-950/30 p-2 rounded border border-cyan-500/20 group hover:border-cyan-500/40 hover:bg-cyan-950/50 transition-all cursor-pointer"
+          >
+            <code className="text-xs font-mono text-cyan-300 truncate flex-1">
+              {asset.ownerAddress}
+            </code>
+            <ExternalLink className="w-3.5 h-3.5 text-cyan-500 group-hover:text-cyan-300" />
+          </a>
         </div>
 
         {/* Created At */}
