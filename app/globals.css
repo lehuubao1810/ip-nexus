@@ -65,7 +65,7 @@
   --input: #1a1a2e;
   --ring: #00ffff;
   --radius: 0.5rem;
-  
+
   --chart-1: #00ffff;
   --chart-2: #ff00ff;
   --chart-3: #ffff00;
@@ -92,20 +92,21 @@
 }
 
 /* Custom scrollbar for EmptyState */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
+*::-webkit-scrollbar {
+  width: 6px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+*::-webkit-scrollbar-track {
+  background: #00d3f317;
   border-radius: 4px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 255, 0.3);
+*::-webkit-scrollbar-thumb {
+  background: #00d3f356;
   border-radius: 4px;
+  cursor: pointer;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 255, 0.5);
+*::-webkit-scrollbar-thumb:hover {
+  background: #00d3f376;
 }

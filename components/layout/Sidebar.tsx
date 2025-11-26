@@ -61,7 +61,8 @@ export default function Sidebar({ open, onOpenChange, node }: SidebarProps) {
             </div>
           </div>
 
-          <SheetDescription className="text-lg text-gray-400 leading-relaxed">
+              {/* max 3 rows */}
+          <SheetDescription className="text-sm text-gray-400 leading-relaxed max-h-[100px] overflow-y-auto pr-2">
             {node.description || "No description available for this asset."}
           </SheetDescription>
 
